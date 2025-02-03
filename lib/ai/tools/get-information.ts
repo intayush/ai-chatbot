@@ -37,7 +37,7 @@ export const findRelevantContent = async (userQuery: string) => {
 
 
 export const getInformation = tool({
-    description: `Get information from your RFP knowledge base to answer questions. Call this tool only if the question pertains to RFP or software engineering.`,
+    description: `Get information from your knowledge base to answer questions.`,
     parameters: z.object({
         question: z.string().describe('the users question'),
     }),
