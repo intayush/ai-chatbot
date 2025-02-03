@@ -33,6 +33,7 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { generateReport } from '@/lib/ai/tools/generate-report';
+import { queryDatabase } from '@/lib/ai/tools/query-database';
 
 export const maxDuration = 60;
 
@@ -42,18 +43,10 @@ type AllowedTools =
   | 'requestSuggestions'
   | 'getWeather'
   | 'getInformation'
-  // | 'generateReport';
+  | 'queryDatabase'
+// | 'generateReport';
 
-const blocksTools: AllowedTools[] = [
-  'createDocument',
-  'updateDocument',
-  'requestSuggestions',
-  'getInformation',
-  // 'generateReport'
-];
-
-const weatherTools: AllowedTools[] = ['getWeather'];
-const allTools: AllowedTools[] = [...blocksTools, ...weatherTools];
+let allTools: AllowedTools[] = ['createDocument', 'updateDocument', 'requestSuggestions', 'getInformation', 'getWeather', 'queryDatabase'];
 
 const embeddingModel = openai.embedding('text-embedding-3-large');
 
@@ -70,7 +63,7 @@ export const findRelevantContent = async (userQuery: string) => {
   const userQueryEmbedded = await generateEmbedding(userQuery);
   const collectionName = process.env.QDRANT_COLLECTION ?? 'docs';
 
-  const client = new QdrantClient({url: process.env.QDRANT_URL, apiKey: process.env.QDRANT_API_KEY});
+  const client = new QdrantClient({ url: process.env.QDRANT_URL, apiKey: process.env.QDRANT_API_KEY });
 
   const relevantDocs = await client.search(collectionName, {
     vector: userQueryEmbedded,
@@ -79,9 +72,9 @@ export const findRelevantContent = async (userQuery: string) => {
   const filteredData = relevantDocs.map((item: any) => {
     const meta = (item.payload?.metadata as any);
     return {
-    source: meta?.source,
-    page: meta?.page,
-    page_content: meta?.page_content
+      source: meta?.source,
+      page: meta?.page,
+      page_content: meta?.page_content
     }
   });
   return filteredData;
@@ -126,6 +119,12 @@ export async function POST(request: Request) {
 
   return createDataStreamResponse({
     execute: (dataStream) => {
+      const userQuery = messages
+        .filter((msg) => msg.role === "user")
+        .pop()?.content;
+      if(userQuery?.includes("@query")) {
+        allTools = ['queryDatabase'];
+      }
       const result = streamText({
         model: customModel(model.apiIdentifier, model.provider),
         system: systemPrompt,
@@ -151,6 +150,7 @@ export async function POST(request: Request) {
             }),
             execute: async ({ question }) => findRelevantContent(question),
           }),
+          queryDatabase
         },
         onFinish: async ({ response }) => {
           if (session.user?.id) {

@@ -20,6 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import DocumentReferences from './document-references';
+import { QueryResults } from './query-table';
 
 const PurePreviewMessage = ({
   chatId,
@@ -43,6 +44,7 @@ const PurePreviewMessage = ({
   isReadonly: boolean;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
+  console.log(message)
 
   return (
     <AnimatePresence>
@@ -155,6 +157,10 @@ const PurePreviewMessage = ({
                           /> ) : toolName === 'getInformation' ? (
                           <DocumentReferences
                             references={result}
+                          />
+                        ) : toolName === 'queryDatabase' ? (
+                          <QueryResults
+                            result={result}
                           />
                         ) : (
                           <pre>{JSON.stringify(result, null, 2)}</pre>

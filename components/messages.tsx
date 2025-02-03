@@ -40,7 +40,9 @@ function PureMessages({
     >
       {/* {messages.length === 0 && <Overview />} */}
 
-      {messages.map((message, index) => (
+      {messages.map((message, index) => {
+        if(index>0 && (messages[index-1])?.toolInvocations?.find(tool => tool.toolName === "queryDatabase")) return <div key={message.id} className="hidden"></div>
+        return (
         <PreviewMessage
           key={message.id}
           chatId={chatId}
@@ -55,7 +57,7 @@ function PureMessages({
           reload={reload}
           isReadonly={isReadonly}
         />
-      ))}
+      )})}
 
       {isLoading &&
         messages.length > 0 &&
