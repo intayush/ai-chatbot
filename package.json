@@ -18,12 +18,14 @@
     "db:up": "drizzle-kit up"
   },
   "dependencies": {
+    "@ai-sdk/mistral": "^1.1.5",
     "@ai-sdk/openai": "1.0.19",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-python": "^6.1.6",
     "@codemirror/state": "^6.5.0",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.35.3",
+    "@qdrant/qdrant-js": "^1.13.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-dropdown-menu": "^2.1.2",
@@ -55,6 +57,7 @@
     "next": "15.0.3-canary.2",
     "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.3.0",
+    "ollama-ai-provider": "^1.2.0",
     "orderedmap": "^2.1.1",
     "postgres": "^3.4.4",
     "prosemirror-example-setup": "^1.2.3",

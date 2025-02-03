@@ -19,6 +19,7 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
+import DocumentReferences from './document-references';
 
 const PurePreviewMessage = ({
   chatId,
@@ -131,7 +132,6 @@ const PurePreviewMessage = ({
 
                   if (state === 'result') {
                     const { result } = toolInvocation;
-
                     return (
                       <div key={toolCallId}>
                         {toolName === 'getWeather' ? (
@@ -152,6 +152,9 @@ const PurePreviewMessage = ({
                             type="request-suggestions"
                             result={result}
                             isReadonly={isReadonly}
+                          /> ) : toolName === 'getInformation' ? (
+                          <DocumentReferences
+                            references={result}
                           />
                         ) : (
                           <pre>{JSON.stringify(result, null, 2)}</pre>

@@ -7,23 +7,23 @@ import { Suggestion } from '@/lib/db/schema';
 import { customModel } from '..';
 import { generateUUID } from '@/lib/utils';
 
-interface RequestSuggestionsProps {
+interface GenerateReportProps {
   model: Model;
   session: Session;
   dataStream: DataStreamWriter;
 }
 
-export const requestSuggestions = ({
+export const generateReport = ({
   model,
   session,
   dataStream,
-}: RequestSuggestionsProps) =>
+}: GenerateReportProps) =>
   tool({
-    description: 'Request suggestions for a document',
+    description: 'Generate a report for a document.',
     parameters: z.object({
       documentId: z
         .string()
-        .describe('The ID of the document to request edits'),
+        .describe('The ID of the document for which report needs to be generated'),
     }),
     execute: async ({ documentId }) => {
       const document = await getDocumentById({ id: documentId });
@@ -72,21 +72,21 @@ export const requestSuggestions = ({
       if (session.user?.id) {
         const userId = session.user.id;
 
-        await saveSuggestions({
-          suggestions: suggestions.map((suggestion) => ({
-            ...suggestion,
-            userId,
-            createdAt: new Date(),
-            documentCreatedAt: document.createdAt,
-          })),
-        });
+        // await saveSuggestions({
+        //   suggestions: suggestions.map((suggestion) => ({
+        //     ...suggestion,
+        //     userId,
+        //     createdAt: new Date(),
+        //     documentCreatedAt: document.createdAt,
+        //   })),
+        // });
       }
 
       return {
         id: documentId,
         title: document.title,
         kind: document.kind,
-        message: 'Suggestions have been added to the document',
+        message: 'Report generated',
       };
     },
   });

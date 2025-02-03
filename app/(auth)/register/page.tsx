@@ -9,10 +9,11 @@ import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
 
 import { register, type RegisterActionState } from '../actions';
+import Image from 'next/image';
 
 export default function Page() {
   const router = useRouter();
-
+  
   const [email, setEmail] = useState('');
   const [isSuccessful, setIsSuccessful] = useState(false);
 
@@ -43,27 +44,46 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-dvh w-screen items-start pt-12 md:pt-0 md:items-center justify-center bg-background">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl gap-12 flex flex-col">
-        <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <h3 className="text-xl font-semibold dark:text-zinc-50">Sign Up</h3>
-          <p className="text-sm text-gray-500 dark:text-zinc-400">
-            Create an account with your email and password
+    <div className="min-h-screen w-full grid lg:grid-cols-2">
+      <div className="p-8 lg:p-12 bg-[#F8F9FF]">
+        <div className="max-w-[520px] mx-auto">
+          <div className="flex items-center gap-2 mb-16">
+            <Image src={`/images/logo@2x.png`} width={144} height={79} alt="" />
+          </div>
+
+          <Image
+            src={`/images/ai_illustration.jpg`}
+            alt="Workflow Illustration"
+            width={500}
+            height={300}
+            className="mb-8"
+          />
+
+          <h1 className="text-3xl font-bold mb-4">Effortless Creation of Business Logic Workflows</h1>
+          <p className="text-gray-600 leading-relaxed">
+            Enables users to create complex business logic workflows for apps through its low-code interface, Flow.
+            Users can integrate real-time data from various sources and use pre-built components for accelerated
+            development.
           </p>
         </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
-          <SubmitButton isSuccessful={isSuccessful}>Sign Up</SubmitButton>
-          <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
-            {'Already have an account? '}
-            <Link
-              href="/login"
-              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
-            >
-              Sign in
-            </Link>
-            {' instead.'}
-          </p>
-        </AuthForm>
+      </div>
+      <div className="p-8 lg:p-12 flex items-center justify-center">
+        <div className="w-full max-w-[440px]">
+
+          <AuthForm action={handleSubmit} defaultEmail={email} title="Sign Up">
+            <SubmitButton isSuccessful={isSuccessful}>Sign Up</SubmitButton>
+            <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
+              {'Already have an account? '}
+              <Link
+                href="/login"
+                className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
+              >
+                Sign in
+              </Link>
+              {' instead.'}
+            </p>
+          </AuthForm>
+        </div>
       </div>
     </div>
   );

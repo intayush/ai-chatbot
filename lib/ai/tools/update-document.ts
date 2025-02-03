@@ -51,7 +51,7 @@ export const updateDocument = ({
 
       if (document.kind === 'text') {
         const { fullStream } = streamText({
-          model: customModel(model.apiIdentifier),
+          model: customModel(model.apiIdentifier, model.provider),
           system: updateDocumentPrompt(currentContent, 'text'),
           experimental_transform: smoothStream({ chunking: 'word' }),
           prompt: description,
@@ -82,7 +82,7 @@ export const updateDocument = ({
         dataStream.writeData({ type: 'finish', content: '' });
       } else if (document.kind === 'code') {
         const { fullStream } = streamObject({
-          model: customModel(model.apiIdentifier),
+          model: customModel(model.apiIdentifier, model.provider),
           system: updateDocumentPrompt(currentContent, 'code'),
           prompt: description,
           schema: z.object({

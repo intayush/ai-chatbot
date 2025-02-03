@@ -10,6 +10,7 @@ import {
   updateChatVisiblityById,
 } from '@/lib/db/queries';
 import { VisibilityType } from '@/components/visibility-selector';
+import { ModelProviders } from '@/lib/ai/models';
 
 export async function saveModelId(model: string) {
   const cookieStore = await cookies();
@@ -22,7 +23,7 @@ export async function generateTitleFromUserMessage({
   message: Message;
 }) {
   const { text: title } = await generateText({
-    model: customModel('gpt-4o-mini'),
+    model: customModel('gpt-4o-mini', ModelProviders.OPENAI),
     system: `\n
     - you will generate a short title based on the first message a user begins a conversation with
     - ensure it is not more than 80 characters long
