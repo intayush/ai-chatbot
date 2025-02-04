@@ -1,39 +1,19 @@
-import {
-  type Message,
-  createDataStreamResponse,
-  smoothStream,
-  streamText,
-  embed,
-  tool
-} from 'ai';
-import { z } from 'zod';
-import { QdrantClient } from '@qdrant/qdrant-js';
-import { openai } from '@ai-sdk/openai';
-
-
-import { auth } from '@/app/(auth)/auth';
-import { customModel } from '@/lib/ai';
-import { models } from '@/lib/ai/models';
-import { systemPrompt } from '@/lib/ai/prompts';
-import {
-  deleteChatById,
-  getChatById,
-  saveChat,
-  saveMessages,
-} from '@/lib/db/queries';
-import {
-  generateUUID,
-  getMostRecentUserMessage,
-  sanitizeResponseMessages,
-} from '@/lib/utils';
-
-import { generateTitleFromUserMessage } from '../../actions';
-import { createDocument } from '@/lib/ai/tools/create-document';
-import { updateDocument } from '@/lib/ai/tools/update-document';
-import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
-import { getWeather } from '@/lib/ai/tools/get-weather';
-import { generateReport } from '@/lib/ai/tools/generate-report';
-import { queryDatabase } from '@/lib/ai/tools/query-database';
+import {createDataStreamResponse, embed, type Message, smoothStream, streamText, tool} from 'ai';
+import {z} from 'zod';
+import {QdrantClient} from '@qdrant/qdrant-js';
+import {openai} from '@ai-sdk/openai';
+import {auth} from '@/app/(auth)/auth';
+import {models} from '@/lib/ai/models';
+import {systemPrompt} from '@/lib/ai/prompts';
+import {deleteChatById, getChatById, saveChat, saveMessages,} from '@/lib/db/queries';
+import {generateUUID, getMostRecentUserMessage, sanitizeResponseMessages,} from '@/lib/utils';
+import {generateTitleFromUserMessage} from '../../actions';
+import {createDocument} from '@/lib/ai/tools/create-document';
+import {updateDocument} from '@/lib/ai/tools/update-document';
+import {requestSuggestions} from '@/lib/ai/tools/request-suggestions';
+import {getWeather} from '@/lib/ai/tools/get-weather';
+import {queryDatabase} from '@/lib/ai/tools/query-database';
+import {customModel} from "@/lib/ai";
 
 export const maxDuration = 60;
 
@@ -61,7 +41,7 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
 
 export const findRelevantContent = async (userQuery: string) => {
   const userQueryEmbedded = await generateEmbedding(userQuery);
-  const collectionName = process.env.QDRANT_COLLECTION ?? 'docs';
+  const collectionName = process.env.QDRANT_COLLECTION ?? 'documents';
 
   const client = new QdrantClient({ url: process.env.QDRANT_URL, apiKey: process.env.QDRANT_API_KEY });
 
@@ -114,7 +94,7 @@ export async function POST(request: Request) {
   }
 
   await saveMessages({
-    messages: [{ ...userMessage, createdAt: new Date(), chatId: id }],
+    messages: [{ ...userMessage, createdAt: new Date(), chatId: id, promptTokens: '0', completionTokens: '0', totalTokens: '0' }],
   });
 
   return createDataStreamResponse({
@@ -150,9 +130,9 @@ export async function POST(request: Request) {
             }),
             execute: async ({ question }) => findRelevantContent(question),
           }),
-          queryDatabase
+          queryDatabase: queryDatabase(customModel(model.apiIdentifier, model.provider))
         },
-        onFinish: async ({ response }) => {
+        onFinish: async ({ response, usage }) => {
           if (session.user?.id) {
             try {
               const responseMessagesWithoutIncompleteToolCalls =
@@ -167,6 +147,9 @@ export async function POST(request: Request) {
                       role: message.role,
                       content: message.content,
                       createdAt: new Date(),
+                      promptTokens: `${usage.promptTokens}`,
+                      completionTokens: `${usage.completionTokens}`,
+                      totalTokens: `${usage.totalTokens}`
                     };
                   },
                 ),

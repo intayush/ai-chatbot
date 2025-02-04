@@ -15,7 +15,9 @@
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
-    "db:up": "drizzle-kit up"
+    "db:up": "drizzle-kit up",
+    "seed": "tsx lib/seed.ts",
+    "seed:documents": "tsx lib/seed-documents.ts"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^1.1.5",
@@ -47,6 +49,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "codemirror": "^6.0.1",
+    "csv-parser": "^3.2.0",
     "date-fns": "^4.1.0",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.5",
@@ -61,6 +64,7 @@
     "next-themes": "^0.3.0",
     "ollama-ai-provider": "^1.2.0",
     "orderedmap": "^2.1.1",
+    "pdf-parse": "^1.1.1",
     "pg": "^8.13.1",
     "postgres": "^3.4.4",
     "prosemirror-example-setup": "^1.2.3",

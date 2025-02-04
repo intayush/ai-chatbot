@@ -1,9 +1,14 @@
-import { openai } from '@ai-sdk/openai';
-import { generateObject, tool } from 'ai';
-import { z } from 'zod';
-import pg from "pg";
+import {openai} from '@ai-sdk/openai';
+import {generateObject, LanguageModel, tool} from 'ai';
+import {z} from 'zod';
+import postgres from "postgres";
+import {drizzle} from "drizzle-orm/postgres-js";
 
 type Result = Record<string, string | number>;
+
+const client = postgres(process.env.POSTGRES_URL!);
+const db = drizzle(client);
+const openai_model = openai("gpt-4o-mini")
 
 const configSchema = z
     .object({
@@ -33,11 +38,11 @@ const configSchema = z
 
 export type Config = z.infer<typeof configSchema>;
 
-export const generateQuery = async (input: string) => {
+export const generateQuery = async (input: string, model?: LanguageModel) => {
     "use server";
     try {
         const result = await generateObject({
-            model: openai("gpt-4o"),
+            model: model ? model : openai_model,
             system: `You are a SQL (postgres) and data visualization expert. Your job is to help the user write a SQL query to retrieve the data they need. The table schema is as follows:
   
         unicorns (
@@ -111,18 +116,7 @@ export const runGenerateSQLQuery = async (query: string) => {
 
     let data: any;
     try {
-        const { Client } = pg
-        const client = new Client({
-            user: process.env.POSTGRES_USER ?? "postgres",
-            password: process.env.POSTGRES_PASSWORD ?? "S3cret",
-            host: process.env.POSTGRES_HOST ?? 'localhost',
-            port: 5433,
-            database: process.env.POSTGRES_DATABASE ?? 'unicorns',
-        });
-
-        await client.connect();
-        console.log("Connected to database");
-        data = await client.query(query);
+        data = await db.execute(query);
     } catch (e: any) {
         if (e.message.includes('relation "unicorns" does not exist')) {
             console.log(
@@ -135,19 +129,20 @@ export const runGenerateSQLQuery = async (query: string) => {
         }
     }
 
-    return data.rows as Result[];
+    return data as Result[];
 };
 
 export const generateChartConfig = async (
     results: Result[],
     userQuery: string,
+    model?: LanguageModel
 ) => {
     "use server";
     const system = `You are a data visualization expert. `;
 
     try {
         const { object: config } = await generateObject({
-            model: openai("gpt-4o"),
+            model: model ? model : openai_model,
             system,
             prompt: `Given the following data from a SQL query result, generate the chart config that best visualises the data and answers the users query.
         For multiple groups use multi-lines.
@@ -187,17 +182,16 @@ export const generateChartConfig = async (
     }
 };
 
-export const queryDatabase = tool({
+export const queryDatabase = (model: LanguageModel) => tool({
     description: 'Query the database to find relevant information for the user query.',
     parameters: z.object({
         query: z.string().describe('The user query for which a corresponding SQL query needs to be created'),
     }),
     execute: async ({ query }) => {
-        const sql = await generateQuery(query);
+        const sql = await generateQuery(query, model);
         const data = await runGenerateSQLQuery(sql);
         const columns = data.length > 0 ? Object.keys(data[0]) : [];
-        const generation = await generateChartConfig(data, query);
-        console.log(generation);
+        const generation = await generateChartConfig(data, query, model);
         return { results: data, columns, config: generation?.config };
     },
 });

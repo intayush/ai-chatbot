@@ -45,7 +45,7 @@ export default function Page() {
       <div className="p-8 lg:p-12 bg-[#F8F9FF]">
         <div className="max-w-[520px] mx-auto">
           <div className="flex items-center gap-2 mb-16">
-            <Image src={`/images/logo@2x.png`} width={144} height={79} alt="" />
+            <Image src={`/images/thoughtworks_flamingo_wave.png`} width={144} height={79} alt="" />
           </div>
 
           <Image
