@@ -94,7 +94,7 @@ export async function POST(request: Request) {
   }
 
   await saveMessages({
-    messages: [{ ...userMessage, createdAt: new Date(), chatId: id }],
+    messages: [{ ...userMessage, createdAt: new Date(), chatId: id, promptTokens: '0', completionTokens: '0', totalTokens: '0' }],
   });
 
   return createDataStreamResponse({
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
           }),
           queryDatabase: queryDatabase(customModel(model.apiIdentifier, model.provider))
         },
-        onFinish: async ({ response }) => {
+        onFinish: async ({ response, usage }) => {
           if (session.user?.id) {
             try {
               const responseMessagesWithoutIncompleteToolCalls =
@@ -147,6 +147,9 @@ export async function POST(request: Request) {
                       role: message.role,
                       content: message.content,
                       createdAt: new Date(),
+                      promptTokens: `${usage.promptTokens}`,
+                      completionTokens: `${usage.completionTokens}`,
+                      totalTokens: `${usage.totalTokens}`
                     };
                   },
                 ),
