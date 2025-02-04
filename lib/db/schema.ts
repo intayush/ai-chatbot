@@ -1,14 +1,14 @@
 import type { InferSelectModel } from 'drizzle-orm';
 import {
-  pgTable,
-  varchar,
-  timestamp,
-  json,
-  uuid,
-  text,
-  primaryKey,
-  foreignKey,
-  boolean,
+    pgTable,
+    varchar,
+    timestamp,
+    json,
+    uuid,
+    text,
+    primaryKey,
+    foreignKey,
+    boolean, decimal, serial,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -113,3 +113,16 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+export const unicorns = pgTable('unicorns', {
+    id: serial('id').primaryKey(),
+    company: varchar('company', { length: 255 }).notNull().unique(),
+    valuation: decimal('valuation', { precision: 10, scale: 2 }).notNull(),
+    dateJoined: timestamp('date_joined'),
+    country: varchar('country', { length: 255 }).notNull(),
+    city: varchar('city', { length: 255 }).notNull(),
+    industry: varchar('industry', { length: 255 }).notNull(),
+    selectInvestors: text('select_investors').notNull(),
+});
+
+export type Unicorns = InferSelectModel<typeof unicorns>;
