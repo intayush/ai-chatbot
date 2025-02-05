@@ -9,7 +9,7 @@ import {embed} from "ai";
 
 
 // Qdrant Client Setup
-const qdrant = new QdrantClient({ url: 'http://localhost:6333' });
+const qdrant = new QdrantClient({ url: 'http://127.0.0.1:6333' });
 
 
 const COLLECTION_NAME = 'documents';
@@ -82,6 +82,10 @@ async function seedDocuments() {
                     fileName: file,
                     chunkIndex: index,
                     content: chunk,
+                    metadata: {
+                        source: file,
+                        page_content: chunk
+                    },
                 },
             })));
 

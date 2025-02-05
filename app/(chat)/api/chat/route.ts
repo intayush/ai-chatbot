@@ -1,6 +1,4 @@
-import {createDataStreamResponse, embed, type Message, smoothStream, streamText, tool} from 'ai';
-import {z} from 'zod';
-import {QdrantClient} from '@qdrant/qdrant-js';
+import {createDataStreamResponse, embed, type Message, smoothStream, streamText} from 'ai';
 import {openai} from '@ai-sdk/openai';
 import {auth} from '@/app/(auth)/auth';
 import {models} from '@/lib/ai/models';
@@ -14,6 +12,7 @@ import {requestSuggestions} from '@/lib/ai/tools/request-suggestions';
 import {getWeather} from '@/lib/ai/tools/get-weather';
 import {queryDatabase} from '@/lib/ai/tools/query-database';
 import {customModel} from "@/lib/ai";
+import { getInformation } from '@/lib/ai/tools/get-information';
 
 export const maxDuration = 60;
 
@@ -37,27 +36,6 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
     value: input,
   });
   return embedding;
-};
-
-export const findRelevantContent = async (userQuery: string) => {
-  const userQueryEmbedded = await generateEmbedding(userQuery);
-  const collectionName = process.env.QDRANT_COLLECTION ?? 'documents';
-
-  const client = new QdrantClient({ url: process.env.QDRANT_URL, apiKey: process.env.QDRANT_API_KEY });
-
-  const relevantDocs = await client.search(collectionName, {
-    vector: userQueryEmbedded,
-    limit: 5
-  });
-  const filteredData = relevantDocs.map((item: any) => {
-    const meta = (item.payload?.metadata as any);
-    return {
-      source: meta?.source,
-      page: meta?.page,
-      page_content: meta?.page_content
-    }
-  });
-  return filteredData;
 };
 
 export async function POST(request: Request) {
@@ -123,13 +101,7 @@ export async function POST(request: Request) {
             dataStream,
             model,
           }),
-          getInformation: tool({
-            description: `get information from your knowledge base to answer questions.`,
-            parameters: z.object({
-              question: z.string().describe('the users question'),
-            }),
-            execute: async ({ question }) => findRelevantContent(question),
-          }),
+          getInformation,
           queryDatabase: queryDatabase(customModel(model.apiIdentifier, model.provider))
         },
         onFinish: async ({ response, usage }) => {

@@ -3,7 +3,7 @@ import { QdrantClient } from "@qdrant/qdrant-js";
 import { embed, tool } from "ai";
 import { z } from "zod";
 
-const embeddingModel = openai.embedding('text-embedding-3-large');
+const embeddingModel = openai.embedding('text-embedding-ada-002');
 
 export const generateEmbedding = async (value: string): Promise<number[]> => {
     const input = value.replaceAll('\\n', ' ');
@@ -16,10 +16,9 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
 
 export const findRelevantContent = async (userQuery: string) => {
     const userQueryEmbedded = await generateEmbedding(userQuery);
-    const collectionName = process.env.QDRANT_COLLECTION ?? 'docs';
+    const collectionName = process.env.QDRANT_COLLECTION ?? 'documents';
 
     const client = new QdrantClient({ url: process.env.QDRANT_URL, apiKey: process.env.QDRANT_API_KEY });
-
     const relevantDocs = await client.search(collectionName, {
         vector: userQueryEmbedded,
         limit: 5
@@ -28,7 +27,6 @@ export const findRelevantContent = async (userQuery: string) => {
         const meta = (item.payload?.metadata as any);
         return {
             source: meta?.source,
-            page: meta?.page,
             page_content: meta?.page_content
         }
     });
