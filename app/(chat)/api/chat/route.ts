@@ -80,8 +80,10 @@ export async function POST(request: Request) {
       const userQuery = messages
         .filter((msg) => msg.role === "user")
         .pop()?.content;
-      if(userQuery?.includes("@query")) {
+      if(userQuery?.toLowerCase()?.includes("@query")) {
         allTools = ['queryDatabase'];
+      }else if(userQuery?.toLowerCase().includes("@find")) {
+        allTools = ['getInformation']
       }
       const result = streamText({
         model: customModel(model.apiIdentifier, model.provider),

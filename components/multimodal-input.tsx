@@ -241,10 +241,16 @@ function PureMultimodalInput({
         )}
         rows={2}
         autoFocus
+        actions={[{
+          "name": "Query",
+          "description": "Do a database lookup"
+        },{
+          "name": "Find",
+          "description": "Search for information in documents"
+        }]}
         onKeyDown={(event) => {
           if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
-
             if (isLoading) {
               toast.error('Please wait for the model to finish its response!');
             } else {
