@@ -1,9 +1,7 @@
-import { openai } from "@ai-sdk/openai";
-import { QdrantClient } from "@qdrant/qdrant-js";
 import { embed, tool } from "ai";
 import { z } from "zod";
-
-const embeddingModel = openai.embedding('text-embedding-ada-002');
+import embeddingModel from "../textEmbeddingModel";
+import qdrant from "@/lib/db/vector-db-client";
 
 export const generateEmbedding = async (value: string): Promise<number[]> => {
     const input = value.replaceAll('\\n', ' ');
@@ -15,10 +13,10 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
 };
 
 export const findRelevantContent = async (userQuery: string) => {
+    try {
     const userQueryEmbedded = await generateEmbedding(userQuery);
     const collectionName = process.env.QDRANT_COLLECTION ?? 'documents';
-
-    const client = new QdrantClient({ url: process.env.QDRANT_URL, apiKey: process.env.QDRANT_API_KEY });
+    const client = qdrant;
     const relevantDocs = await client.search(collectionName, {
         vector: userQueryEmbedded,
         limit: 5
@@ -31,6 +29,9 @@ export const findRelevantContent = async (userQuery: string) => {
         }
     });
     return filteredData;
+    } catch(e) {
+        console.error(e);
+    }
 };
 
 

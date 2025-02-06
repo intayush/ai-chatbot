@@ -3,19 +3,14 @@ import fs from "fs";
 import path from "path";
 import pdfParse from "pdf-parse";
 // import mammoth from "mammoth";
-import {QdrantClient} from "@qdrant/qdrant-js";
-import {openai} from "@ai-sdk/openai";
 import {embed} from "ai";
+import embeddingModel from "./ai/textEmbeddingModel";
+import qdrant from "./db/vector-db-client";
 
 
-// Qdrant Client Setup
-const qdrant = new QdrantClient({ url: 'http://127.0.0.1:6333' });
-
-
-const COLLECTION_NAME = 'documents';
+const COLLECTION_NAME = process.env.QDRANT_COLLECTION ?? 'documents';
 const CHUNK_SIZE = 1000; // Characters per chunk
 
-const embeddingModel = openai.embedding("text-embedding-ada-002");
 // Ensure collection exists
 async function ensureCollection() {
     const collections = await qdrant.getCollections();

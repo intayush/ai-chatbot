@@ -27,17 +27,6 @@ type AllowedTools =
 
 let allTools: AllowedTools[] = ['createDocument', 'updateDocument', 'requestSuggestions', 'getInformation', 'getWeather', 'queryDatabase'];
 
-const embeddingModel = openai.embedding('text-embedding-3-large');
-
-export const generateEmbedding = async (value: string): Promise<number[]> => {
-  const input = value.replaceAll('\\n', ' ');
-  const { embedding } = await embed({
-    model: embeddingModel,
-    value: input,
-  });
-  return embedding;
-};
-
 export async function POST(request: Request) {
   const {
     id,

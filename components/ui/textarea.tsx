@@ -8,7 +8,7 @@ const Textarea = React.forwardRef<
   const [showDropdown, setShowDropdown] = React.useState(false);
   const [filteredActions, setFilteredActions] = React.useState(actions);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState((props.value as string) ?? '');
 
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   React.useImperativeHandle(ref, () => textareaRef.current!);
@@ -51,7 +51,6 @@ const Textarea = React.forwardRef<
   const selectAction = (action: string) => {
     setValue((prev) => {
       const cursorPos = textareaRef.current?.selectionStart ?? 0;
-      console.log(prev.slice(0, cursorPos - 1), '====', `@${action} `, '==', prev.charAt(cursorPos-2));
       return prev.slice(0, cursorPos - 1) + `${prev.charAt(cursorPos-2) === "@" ? "" : "@" }${action} ` + prev.slice(cursorPos);
     });
     setShowDropdown(false);
