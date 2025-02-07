@@ -30,7 +30,7 @@
         --card-foreground: 0 0% 0%; /* Onyx Black */
         --popover: 0 0% 100%; /* Talc White */
         --popover-foreground: 0 0% 0%; /* Onyx Black */
-        --primary: 0 61% 65%; /* Wave Blue */
+        --primary: 350 85% 66%; /* Flamingo Pink */
         --primary-foreground: 0 0% 100%; /* Talc White */
 
         --secondary: 240 4.8% 95.9%;
@@ -50,11 +50,11 @@
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
-        --sidebar-background: 237 241% 243%; /* Mist Gray */
+        --sidebar-background: 200 20% 94%; /* Mist Gray */
         --sidebar-foreground: 0 0% 0%; /* Onyx Black */
         --sidebar-primary: 0 61% 79%; /* Wave Blue */
         --sidebar-primary-foreground: 0 0% 100%; /* Talc White */
-        --sidebar-accent: 242 97% 22%; /* Flamingo Pink */
+        --sidebar-accent: 194 100% 15%; /* Wave Blue */
         --sidebar-accent-foreground: 0 0% 100%; /* Talc White */
         --sidebar-border: 237 241% 243%; /* Mist Gray */
         --sidebar-ring: 0 0% 0%; /* Onyx Black */
@@ -68,7 +68,7 @@
         --popover-foreground: 0 0% 100%; /* Talc White */
         --primary: 0 61% 79%; /* Wave Blue */
         --primary-foreground: 0 0% 100%; /* Talc White */
-        --secondary: 242 97% 22%; /* Flamingo Pink */
+        --secondary: 187 42% 48%; /* Flamingo Pink */
         --secondary-foreground: 0 0% 100%; /* Talc White */
         --muted: 0 0% 20%; /* Onyx Black with 20% opacity */
         --muted-foreground: 0 0% 60%; /* Onyx Black with 60% opacity */
