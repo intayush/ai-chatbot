@@ -24,8 +24,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
     const { theme } = useTheme()
-    const logo = theme === "light" ? "thoughtworks_flamingo_wave.png" : "tw-logo-dark-theme.png"
-    console.log(logo)
+    const logo = theme === "dark" ? "tw-logo-dark-theme.png" : "thoughtworks_flamingo_wave.png";
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
